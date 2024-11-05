@@ -15,6 +15,7 @@ class Program
         items.Remove("Potion");
         Console.WriteLine("\nUpdated inventory:");
         PrintItems();
+        Console.WriteLine($"\nCount of items in inventory: {items.Count()}");
         
         void PrintEnemies()
         {
