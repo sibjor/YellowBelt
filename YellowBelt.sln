@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniKata6", "MiniKata6\Mini
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kata6", "Kata6\Kata6.csproj", "{9780BFF1-AEE7-4993-8F4C-5FE8886E3430}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniKata7", "MiniKata7\MiniKata7.csproj", "{3EADF0BD-F78F-445E-A890-000471FDAA7C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{9780BFF1-AEE7-4993-8F4C-5FE8886E3430}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9780BFF1-AEE7-4993-8F4C-5FE8886E3430}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9780BFF1-AEE7-4993-8F4C-5FE8886E3430}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EADF0BD-F78F-445E-A890-000471FDAA7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EADF0BD-F78F-445E-A890-000471FDAA7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EADF0BD-F78F-445E-A890-000471FDAA7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EADF0BD-F78F-445E-A890-000471FDAA7C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
