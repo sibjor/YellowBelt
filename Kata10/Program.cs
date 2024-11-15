@@ -87,7 +87,11 @@ class Player : ICanFight, ICanSpeak
         Damage = damage;
     }
 
-
+    public void Attack(ICanFight target)
+    {
+        Console.WriteLine($"{Name} attack {target.Name}");
+        target.TakeDamage(Damage);
+    }
 
     public void Speak()
     {

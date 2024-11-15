@@ -1,15 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 
-// I think of interfaces similar to required elements in a C++ header file?
-
 namespace ExamKata;
 
 class Program
 {
     static void Main(string[] args)
     {
-        
+        Player player = new("You", 100, 20);
+        Enemy enemy = new("Dragon", 100, 15);
+        NPC npc = new("John Doe");
+        Merchant merchant = new("Jane Smith");
+
+        // Game Setup
+        merchant.Inventory.Add("Apple");
+        npc.Dialogue = $"{merchant.Name} is too greedy...";
+
+        // Game Execution
+        npc.Speak();
+        merchant.Trade();
+        player.Attack(enemy);
     }
 }
 
@@ -41,6 +51,12 @@ interface ICanFight : IIsCharacter
             Console.WriteLine($"The {Type} {Name} has {Health} health.");
         }
     }
+    
+    public void Attack(ICanFight target)
+    {
+        Console.WriteLine($"{Name} attacks {target.Name}");
+        target.TakeDamage(Damage);
+    }
 }
 
 interface ICanTrade : ICanSpeak
@@ -71,11 +87,7 @@ class Player : ICanFight, ICanSpeak
         Damage = damage;
     }
 
-    public void Attack(ICanFight target)
-    {
-        Console.WriteLine($"{Name} attacks {target.Name}");
-        target.TakeDamage(Damage);
-    }
+
 
     public void Speak()
     {
