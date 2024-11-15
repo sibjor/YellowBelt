@@ -11,15 +11,21 @@ class Program
         NPC npc = new();
         var merchant = new Merchant();
 
+        // Init game
+        
         player.Name = "You";
-        enemy.Name = "the";
+        enemy.Type = "Dragon";
+        enemy.Name = $"the {enemy.Type}";
         npc.Name = "John Doe";
         merchant.Name = "Jane Smith";
         
         merchant.Inventory.Add("Apple");
-        npc.Dialogue = $"{npc.Name}: \"The merchant {merchant.Name} is to greedy!\"";
+        npc.Dialogue = $"{merchant.Name} is to greedy...";
         
-
+        // Run Game
+        npc.Speak();
+        merchant.Trade();
+        player.Attack(enemy);
     }
 }
 
@@ -37,7 +43,7 @@ class Player
 
     public void Attack(Enemy enemy)
     {
-        Console.WriteLine($"{Name} attacks {enemy}");
+        Console.WriteLine($"{Name} attack {enemy.Name}");
         enemy.TakeDamage(16);
     }
 }
@@ -50,12 +56,12 @@ class NPC
      * Properties: Name (string) and Dialogue (string).
        Method: Speak that prints the dialogue.
      */
-    public string Name { get; set; }
+    virtual public string Name { get; set; }
     public string Dialogue { get; set; }
 
     public void Speak()
     {
-        Console.WriteLine(Dialogue);
+        Console.WriteLine($"{Name} sais \"{Dialogue}\"");
     }
 }
 
@@ -69,7 +75,7 @@ class Merchant : NPC
 
     public void Trade()
     {
-        Console.WriteLine("Availible items of the merchant: ");
+        Console.WriteLine($"Availible items at {Name}:s shop: ");
         foreach (var item in Inventory)
         {
             Console.WriteLine($"* {item}");
@@ -89,9 +95,22 @@ class Enemy : NPC
     public int Health { get; set; }
     public int Damage { get; set; }
 
+    public override string Name
+    {
+        get => base.Name;
+        set => base.Name = value.ToLower();
+    }
     public void TakeDamage(int damage)
     {
-        Health -= damage;
-        Console.WriteLine($"The {Type} has {Health} health.");
+        if (Health <= 0)
+        {
+            Console.WriteLine($"{Name} is killed!");
+        }
+        else
+        {
+            Health -= damage;
+            Console.WriteLine($"{Name} has {Health} health.");
+        }
+
     }
 }
