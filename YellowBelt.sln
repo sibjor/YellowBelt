@@ -1,5 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+#
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniKata5", "MiniKata5\MiniKata5.csproj", "{B02E579C-5724-4A42-906F-A97723C40040}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kata5", "Kata5\Kata5.csproj", "{676BFAD5-6E7D-4754-9DCD-1A67BC19B308}"
@@ -11,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniKata7", "MiniKata7\MiniKata7.csproj", "{3EADF0BD-F78F-445E-A890-000471FDAA7C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kata7", "Kata7\Kata7.csproj", "{7A55D839-240C-4BE6-BE85-090B52C3D9BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kata8", "Kata8\Kata8.csproj", "{CDA3D48C-14E2-4367-88E7-487EF4D0808C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,5 +45,9 @@ Global
 		{7A55D839-240C-4BE6-BE85-090B52C3D9BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A55D839-240C-4BE6-BE85-090B52C3D9BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A55D839-240C-4BE6-BE85-090B52C3D9BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDA3D48C-14E2-4367-88E7-487EF4D0808C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDA3D48C-14E2-4367-88E7-487EF4D0808C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDA3D48C-14E2-4367-88E7-487EF4D0808C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDA3D48C-14E2-4367-88E7-487EF4D0808C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
