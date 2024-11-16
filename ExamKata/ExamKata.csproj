@@ -7,4 +7,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Kata10\Kata10.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -50,7 +50,7 @@ class Player
 
 
 
-class NPC
+class NPC : Player
 {
     /*
      * Properties: Name (string) and Dialogue (string).

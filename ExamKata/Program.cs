@@ -1,157 +1,163 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Kata10;
 
-namespace ExamKata;
-
-class Program
+namespace ExamKata
 {
-    static void Main(string[] args)
+    class Program
     {
-        Player player = new("You", 100, 20);
-        Enemy enemy = new("Dragon", 100, 15);
-        NPC npc = new("John Doe");
-        Merchant merchant = new("Jane Smith");
-
-        // Game Setup
-        merchant.Inventory.Add("Apple");
-        npc.Dialogue = $"{merchant.Name} is too greedy...";
-
-        // Game Execution
-        npc.Speak();
-        merchant.Trade();
-        player.Attack(enemy);
-    }
-}
-
-interface IIsCharacter
-{
-    string Name { get; set; }
-    string Type { get; set; }
-}
-
-interface ICanSpeak : IIsCharacter
-{
-    string Dialogue { get; set; }
-    void Speak() => Console.WriteLine($"{Name} says: \"{Dialogue}\"");
-}
-
-interface ICanFight : IIsCharacter
-{
-    int Health { get; set; }
-    int Damage { get; set; }
-    void TakeDamage(int damage)
-    {
-        if (Health <= 0)
+        static void Main(string[] args)
         {
-            Console.WriteLine($"The {Type} {Name} is killed!");
+            Game game = new Game();
+            game.Start();
         }
-        else
+        // Interfaces and classes (Player, Enemy, NPC, Merchant) go here (as previously defined).
+
+        class Game
         {
-            Health -= damage;
-            Console.WriteLine($"The {Type} {Name} has {Health} health.");
-        }
-    }
-    
-    public void Attack(ICanFight target)
-    {
-        Console.WriteLine($"{Name} attacks {target.Name}");
-        target.TakeDamage(Damage);
-    }
-}
+            private Player player;
+            private List<object> encounters;
+            private Random random;
 
-interface ICanTrade : ICanSpeak
-{
-    List<string> Inventory { get; set; }
-    void Trade()
-    {
-        Console.WriteLine($"Available items at {Name}'s shop: ");
-        foreach (var item in Inventory)
-        {
-            Console.WriteLine($"* {item}");
-        }
-    }
-}
+            public Game()
+            {
+                encounters = new List<object>();
+                random = new Random();
+            }
 
-class Player : ICanFight, ICanSpeak
-{
-    public string Name { get; set; }
-    public string Type { get; set; }
-    public string Dialogue { get; set; }
-    public int Health { get; set; }
-    public int Damage { get; set; }
+            public void Start()
+            {
+                SetupGame();
+                RunGameLoop();
+            }
 
-    public Player(string name, int health, int damage)
-    {
-        Name = name;
-        Health = health;
-        Damage = damage;
-    }
+            private void SetupGame()
+            {
+                Console.WriteLine("Enter your player's name:");
+                string name = Console.ReadLine();
+                player = new Player
+                {
+                    Name = name,
+                    Health = 100,
+                    Level = 1,
+                    Experience = 0
+                };
 
+                Console.WriteLine($"Welcome, {player.Name}! Your journey begins.");
 
+                for (int i = 0; i < 10; i++)
+                {
+                    int encounterType = random.Next(3);
+                    switch (encounterType)
+                    {
+                        case 0:
+                            encounters.Add(new Enemy { Type = "Goblin", Health = 50, Damage = 10 });
+                            break;
+                        case 1:
+                            encounters.Add(new NPC { Dialogue = "Hello, traveler! Stay safe out there." });
+                            break;
+                        case 2:
+                            encounters.Add(new Merchant
+                            {
+                                Name = "Wandering Trader",
+                                Inventory = new List<string> { "Potion", "Sword", "Shield" }
+                            });
+                            break;
+                    }
+                }
+            }
 
-    public void Speak()
-    {
-        Console.WriteLine($"{Name} says: \"{Dialogue}\"");
-    }
-}
+            private void RunGameLoop()
+            {
+                foreach (var encounter in encounters)
+                {
+                    if (player.Health <= 0)
+                    {
+                        Console.WriteLine("Game Over! You have perished.");
+                        return;
+                    }
 
-class NPC : ICanSpeak
-{
-    public string Name { get; set; }
-    public string Type { get; set; }
-    public string Dialogue { get; set; }
+                    Console.WriteLine("\nYou encounter something...");
+                    if (encounter is Enemy enemy)
+                    {
+                        HandleCombat(enemy);
+                    }
+                    else if (encounter is NPC npc)
+                    {
+                        HandleNPCInteraction(npc);
+                    }
+                    else if (encounter is Merchant merchant)
+                    {
+                        HandleMerchantInteraction(merchant);
+                    }
+                }
 
-    public NPC(string name)
-    {
-        Name = name;
-    }
+                Console.WriteLine("Congratulations! You survived all encounters.");
+            }
 
-    public void Speak()
-    {
-        Console.WriteLine($"{Name} says: \"{Dialogue}\"");
-    }
-}
+            private void HandleCombat(Enemy enemy)
+            {
+                Console.WriteLine($"An enemy appears! It's a {enemy.Type}.");
+                while (enemy.Health > 0 && player.Health > 0)
+                {
+                    Console.WriteLine("Choose an action: 1. Attack  2. Run");
+                    string choice = Console.ReadLine();
+                    if (choice == "1")
+                    {
+                        player.Attack();
+                        enemy.TakeDamage(20);
+                        if (enemy.Health > 0)
+                        {
+                            enemy.Attack();
+                            player.TakeDamage(enemy.Damage);
+                        }
+                    }
+                    else if (choice == "2")
+                    {
+                        Console.WriteLine("You run away from the battle.");
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid choice.");
+                    }
+                }
 
-class Merchant : NPC, ICanTrade
-{
-    public List<string> Inventory { get; set; } = new List<string>();
+                if (player.Health <= 0)
+                {
+                    Console.WriteLine("You were defeated in combat!");
+                }
+                else
+                {
+                    Console.WriteLine("You defeated the enemy!");
+                    player.GainExperience(50);
+                }
+            }
 
-    public Merchant(string name) : base(name) { }
+            private void HandleNPCInteraction(NPC npc)
+            {
+                Console.WriteLine("You meet a friendly NPC.");
+                npc.Speak();
+            }
 
-    public void Trade()
-    {
-        Console.WriteLine($"Available items at {Name}'s shop: ");
-        foreach (var item in Inventory)
-        {
-            Console.WriteLine($"* {item}");
-        }
-    }
-}
+            private void HandleMerchantInteraction(Merchant merchant)
+            {
+                Console.WriteLine("You encounter a merchant.");
+                merchant.Speak();
+                merchant.BrowseItems();
 
-class Enemy : ICanFight
-{
-    public string Name { get; set; }
-    public string Type { get; set; }
-    public int Health { get; set; }
-    public int Damage { get; set; }
-
-    public Enemy(string type, int health, int damage)
-    {
-        Type = type;
-        Health = health;
-        Damage = damage;
-    }
-
-    public void TakeDamage(int damage)
-    {
-        if (Health <= 0)
-        {
-            Console.WriteLine($"The {Type} {Name} is killed!");
-        }
-        else
-        {
-            Health -= damage;
-            Console.WriteLine($"The {Type} {Name} has {Health} health.");
+                Console.WriteLine("Would you like to buy something? (yes/no)");
+                string choice = Console.ReadLine().ToLower();
+                if (choice == "yes")
+                {
+                    Console.WriteLine("Enter the name of the item you want to buy:");
+                    string item = Console.ReadLine();
+                    merchant.Trade(item);
+                }
+                else
+                {
+                    Console.WriteLine("You decide not to buy anything.");
+                }
+            }
         }
     }
 }

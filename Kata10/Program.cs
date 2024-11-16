@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Security.Cryptography;
+using Microsoft.VisualBasic;
 
 namespace Kata10;
 
@@ -7,155 +11,146 @@ class Program
 {
     static void Main(string[] args)
     {
-        Player player = new("You", 100, 20);
-        Enemy enemy = new("Dragon", 100, 15);
-        NPC npc = new("John Doe");
-        Merchant merchant = new("Jane Smith");
-
-        // Game Setup
-        merchant.Inventory.Add("Apple");
-        npc.Dialogue = $"{merchant.Name} is too greedy...";
-
-        // Game Execution
-        npc.Speak();
-        merchant.Trade();
-        player.Attack(enemy);
+        // All three requirements are set, but classes are instantiated and demonstrated through ExamKata
     }
 }
-
-interface IIsCharacter
+interface ICombat
 {
-    string Name { get; set; }
-    string Type { get; set; }
+    void Attack();
+    void TakeDamage(int damage);
 }
 
-interface ICanSpeak : IIsCharacter
+interface IHealable
 {
-    string Dialogue { get; set; }
-    void Speak() => Console.WriteLine($"{Name} says: \"{Dialogue}\"");
+    void Heal(int amount);
 }
 
-interface ICanFight : IIsCharacter
+interface IExperience
 {
-    int Health { get; set; }
-    int Damage { get; set; }
-    void TakeDamage(int damage)
-    {
-        if (Health <= 0)
-        {
-            Console.WriteLine($"The {Type} {Name} is killed!");
-        }
-        else
-        {
-            Health -= damage;
-            Console.WriteLine($"The {Type} {Name} has {Health} health.");
-        }
-    }
-    
-    public void Attack(ICanFight target)
-    {
-        Console.WriteLine($"{Name} attacks {target.Name}");
-        target.TakeDamage(Damage);
-    }
+    void GainExperience(int amount);
 }
 
-interface ICanTrade : ICanSpeak
+interface ISpeakable
 {
-    List<string> Inventory { get; set; }
-    void Trade()
-    {
-        Console.WriteLine($"Available items at {Name}'s shop: ");
-        foreach (var item in Inventory)
-        {
-            Console.WriteLine($"* {item}");
-        }
-    }
+    void Speak();
 }
 
-class Player : ICanFight, ICanSpeak
+interface ITradeable
+{
+    void BrowseItems();
+    void Trade(string item);
+}
+
+public class Player : ICombat, IHealable, IExperience
 {
     public string Name { get; set; }
-    public string Type { get; set; }
-    public string Dialogue { get; set; }
     public int Health { get; set; }
-    public int Damage { get; set; }
+    public int Level { get; set; }
+    public int Experience { get; set; }
 
-    public Player(string name, int health, int damage)
+    public void Attack()
     {
-        Name = name;
-        Health = health;
-        Damage = damage;
-    }
-
-    public void Attack(ICanFight target)
-    {
-        Console.WriteLine($"{Name} attack {target.Name}");
-        target.TakeDamage(Damage);
-    }
-
-    public void Speak()
-    {
-        Console.WriteLine($"{Name} says: \"{Dialogue}\"");
-    }
-}
-
-class NPC : ICanSpeak
-{
-    public string Name { get; set; }
-    public string Type { get; set; }
-    public string Dialogue { get; set; }
-
-    public NPC(string name)
-    {
-        Name = name;
-    }
-
-    public void Speak()
-    {
-        Console.WriteLine($"{Name} says: \"{Dialogue}\"");
-    }
-}
-
-class Merchant : NPC, ICanTrade
-{
-    public List<string> Inventory { get; set; } = new List<string>();
-
-    public Merchant(string name) : base(name) { }
-
-    public void Trade()
-    {
-        Console.WriteLine($"Available items at {Name}'s shop: ");
-        foreach (var item in Inventory)
-        {
-            Console.WriteLine($"* {item}");
-        }
-    }
-}
-
-class Enemy : ICanFight
-{
-    public string Name { get; set; }
-    public string Type { get; set; }
-    public int Health { get; set; }
-    public int Damage { get; set; }
-
-    public Enemy(string type, int health, int damage)
-    {
-        Type = type;
-        Health = health;
-        Damage = damage;
+        Console.WriteLine($"{Name} attacks the enemy!");
     }
 
     public void TakeDamage(int damage)
     {
+        Health -= damage;
+        Console.WriteLine($"{Name} takes {damage} damage. Remaining health: {Health}");
+    }
+
+    public void Heal(int amount)
+    {
+        Health += amount;
+        Console.WriteLine($"{Name} heals for {amount}. Current health: {Health}");
+    }
+
+    public void GainExperience(int amount)
+    {
+        Experience += amount;
+        Console.WriteLine($"{Name} gains {amount} experience. Total experience: {Experience}");
+
+        if (Experience >= Level * 100)
+        {
+            LevelUp();
+        }
+    }
+
+    private void LevelUp()
+    {
+        Level++;
+        Experience = 0;
+        Console.WriteLine($"{Name} levels up! New level: {Level}");
+    }
+}
+
+public class Enemy : ICombat
+{
+    public string Type { get; set; }
+    public int Health { get; set; }
+    public int Damage { get; set; }
+
+    public void Attack()
+    {
+        Console.WriteLine($"The {Type} attacks with {Damage} damage!");
+    }
+
+    public void TakeDamage(int damage)
+    {
+        Health -= damage;
+        Console.WriteLine($"The {Type} takes {damage} damage. Remaining health: {Health}");
+
         if (Health <= 0)
         {
-            Console.WriteLine($"The {Type} {Name} is killed!");
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Console.WriteLine($"The {Type} has been defeated!");
+    }
+}
+
+public class NPC : ISpeakable
+{
+    public string Dialogue { get; set; }
+
+    public void Speak()
+    {
+        Console.WriteLine($"NPC says: \"{Dialogue}\"");
+    }
+}
+
+public class Merchant : ISpeakable, ITradeable
+{
+    public string Name { get; set; }
+    public List<string> Inventory { get; set; } = new List<string>();
+
+    public void Speak()
+    {
+        Console.WriteLine($"{Name}: \"Welcome to my shop!\"");
+    }
+
+    public void BrowseItems()
+    {
+        Console.WriteLine($"{Name}'s Inventory:");
+        foreach (var item in Inventory)
+        {
+            Console.WriteLine($"- {item}");
+        }
+    }
+
+    public void Trade(string item)
+    {
+        if (Inventory.Contains(item))
+        {
+            Inventory.Remove(item);
+            Console.WriteLine($"You purchased {item} from {Name}.");
         }
         else
         {
-            Health -= damage;
-            Console.WriteLine($"The {Type} {Name} has {Health} health.");
+            Console.WriteLine($"{Name}: \"Sorry, I don't have {item}.\"");
         }
     }
 }
